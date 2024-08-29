@@ -19,8 +19,10 @@ func init() {
 func main() {
 	port := os.Getenv("PORT")
 
-	http.HandleFunc("/", chat.IndexHandler)
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /", chat.IndexHandler)
+	//mux.HandleFunc("/chat", chat.WebsocketHandler)
 
 	log.Printf("Starting server on port %s", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, mux))
 }
