@@ -14,6 +14,9 @@ func init() {
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
+
+	// Inicializa o chat server
+	chat.NewChatServer()
 }
 
 func main() {
@@ -21,7 +24,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /", chat.IndexHandler)
-	//mux.HandleFunc("/chat", chat.WebsocketHandler)
+	mux.HandleFunc("/chat", chat.WebsocketHandler)
 
 	log.Printf("Starting server on port %s", port)
 	log.Fatal(http.ListenAndServe(":"+port, mux))
