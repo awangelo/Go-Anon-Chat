@@ -1,0 +1,8 @@
+Comentar funcoes.
+Calculo cor -> ip.
+Persistencia das mensagens.
+Contagem de tempo e tempo limite do chat.
+Log para websocket.CloseStatus(err) == websocket.StatusNormalClosure (Usuario desconectou voluntariamente).
+Frontend mostrando parte do ip.
+Chan de error em chatServer (?)
+Docker.
