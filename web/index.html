@@ -4,11 +4,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #messages {
+            border: 1px solid #ccc;
+            height: 300px;
+            overflow-y: scroll;
+            padding: 10px;
+        }
+        #input {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 
 <body>
-    <h3>{{ . }} usuarios connectados.</h3>
+    <h3>{{ . }} usuarios conectados.</h3>
+    <div id="messages"></div>
+    <div id="input">
+        <input type="text" id="messageInput" placeholder="Digite sua mensagem...">
+        <button onclick="sendMessage()">Enviar</button>
+    </div>
+
+    <script>
+        const ws = new WebSocket("ws://localhost:8080/chat");
+
+        ws.onopen = function(event) {
+            console.log("Conectado ao servidor WebSocket");
+        };
+
+        ws.onmessage = function(event) {
+            const messagesDiv = document.getElementById("messages");
+            const message = document.createElement("div");
+            message.textContent = event.data;
+            messagesDiv.appendChild(message);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        };
+
+        ws.onclose = function(event) {
+            console.log("Desconectado do servidor WebSocket");
+        };
+
+        function sendMessage() {
+            const input = document.getElementById("messageInput");
+            const message = input.value;
+            if (message) {
+                ws.send(message);
+                input.value = "";
+            }
+        }
+    </script>
 </body>
 
 </html>
