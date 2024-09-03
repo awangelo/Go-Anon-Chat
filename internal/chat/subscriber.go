@@ -1,8 +1,10 @@
 package chat
 
 type Subscriber struct {
-	Ip    string
-	Color int
+	ip    string
+	color int
+	// As mensagens de cada subscriber sao enviadas atraves deste canal.
+	send chan []byte
 }
 
 func getNumberOfSubscribers() int {
