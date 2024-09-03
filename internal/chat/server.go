@@ -42,6 +42,35 @@ func NewChatServer() *chatServer {
 }
 
 // Provavel implementacao do for { select }.
-// func (s *chatServer) run() {
+func (s *chatServer) Run() {
+	for {
+		select {
+		case sub := <-s.register:
+			s.subscribe(sub)
+		case sub := <-s.unregister:
+			s.unsubscribe(sub)
+		case message := <-s.broadcast:
+			s.broadcastMessage(message)
+		}
+	}
+}
 
-// }
+func (s *chatServer) subscribe(sub *Subscriber) {
+	s.subscribersMu.Lock()
+	s.subscribers[sub] = struct{}{}
+	s.subscribersMu.Unlock()
+}
+
+func (s *chatServer) unsubscribe(sub *Subscriber) {
+	s.subscribersMu.Lock()
+	delete(s.subscribers, sub)
+	s.subscribersMu.Unlock()
+}
+
+func (s *chatServer) broadcastMessage(msg []byte) {
+	s.subscribersMu.Lock()
+	for sub := range s.subscribers {
+		sub.send <- msg
+	}
+	s.subscribersMu.Unlock()
+}
