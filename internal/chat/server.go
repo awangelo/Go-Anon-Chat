@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"fmt"
 	"sync"
 	"time"
 )
@@ -52,6 +53,8 @@ func (s *chatServer) Run() {
 		case message := <-s.broadcast:
 			s.broadcastMessage(message)
 		}
+		fmt.Printf("Subscribers: %v\n", s.subscribers)
+		fmt.Printf("Numero de Subscribers (map): %v\n", s.GetActiveSubscribers())
 	}
 }
 
@@ -73,4 +76,8 @@ func (s *chatServer) broadcastMessage(msg []byte) {
 		sub.send <- msg
 	}
 	s.subscribersMu.Unlock()
+}
+
+func (s *chatServer) GetActiveSubscribers() int {
+	return len(s.subscribers)
 }

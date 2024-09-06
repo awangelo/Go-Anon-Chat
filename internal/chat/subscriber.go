@@ -1,5 +1,7 @@
 package chat
 
+import "fmt"
+
 type Subscriber struct {
 	ip    string
 	color int
@@ -7,6 +9,7 @@ type Subscriber struct {
 	send chan []byte
 }
 
-func getNumberOfSubscribers() int {
-	return 2
+// Apenas para ver o para de *Subscribers
+func (s *Subscriber) String() string {
+	return fmt.Sprintf("ip: %v, color: %v", s.ip, s.color)
 }
