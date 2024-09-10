@@ -2,6 +2,7 @@ package chat
 
 import (
 	"fmt"
+	"log"
 	"sync"
 	"time"
 )
@@ -42,42 +43,56 @@ func NewChatServer() *chatServer {
 	}
 }
 
-// Provavel implementacao do for { select }.
+// Run inicia o chat server.
 func (s *chatServer) Run() {
 	for {
 		select {
 		case sub := <-s.register:
 			s.subscribe(sub)
+			s.updateUserCount()
+			log.Printf("Subscriber %v connected.", sub)
 		case sub := <-s.unregister:
 			s.unsubscribe(sub)
+			s.updateUserCount()
+			log.Printf("Subscriber %v disconnected.", sub)
 		case message := <-s.broadcast:
 			s.broadcastMessage(message)
 		}
-		fmt.Printf("Subscribers: %v\n", s.subscribers)
-		fmt.Printf("Numero de Subscribers (map): %v\n", s.GetActiveSubscribers())
 	}
 }
 
+// subscribe adiciona um subscriber ativo ao chat.
 func (s *chatServer) subscribe(sub *Subscriber) {
 	s.subscribersMu.Lock()
+	defer s.subscribersMu.Unlock()
 	s.subscribers[sub] = struct{}{}
-	s.subscribersMu.Unlock()
 }
 
+// unsubscribe remove um subscriber ativo do chat.
 func (s *chatServer) unsubscribe(sub *Subscriber) {
 	s.subscribersMu.Lock()
+	defer s.subscribersMu.Unlock()
 	delete(s.subscribers, sub)
-	s.subscribersMu.Unlock()
 }
 
+// broadcastMessage envia uma mensagem para todos os subscribers.
 func (s *chatServer) broadcastMessage(msg []byte) {
 	s.subscribersMu.Lock()
+	defer s.subscribersMu.Unlock()
 	for sub := range s.subscribers {
 		sub.send <- msg
 	}
-	s.subscribersMu.Unlock()
 }
 
-func (s *chatServer) GetActiveSubscribers() int {
+// updateUserCount envia o html com o numero de usuarios conectados.
+func (s *chatServer) updateUserCount() {
+	countMessage := fmt.Sprintf("<div id='user-count'>%d usuários conectados.</div>", s.getActiveSubscribers())
+	s.broadcastMessage([]byte(countMessage))
+}
+
+// getActiveSubscribers retorna o numero de subscribers ativos.
+func (s *chatServer) getActiveSubscribers() int {
+	s.subscribersMu.Lock()
+	defer s.subscribersMu.Unlock()
 	return len(s.subscribers)
 }
