@@ -21,15 +21,15 @@ func init() {
 
 func main() {
 	port := os.Getenv("PORT")
-
 	server := chat.NewChatServer()
 	go server.Run()
 
-	wsHandler := chat.WebsocketHandler(server)
-
 	mux := http.NewServeMux()
+
+	fs := http.FileServer(http.Dir("./web/static"))
+	mux.Handle("/web/static/", http.StripPrefix("/web/static/", fs))
 	mux.HandleFunc("/", chat.IndexHandler)
-	mux.HandleFunc("/chat", wsHandler)
+	mux.HandleFunc("/chat", chat.WebsocketHandler(server))
 
 	log.Printf("Starting server on port %s", port)
 	log.Fatal(http.ListenAndServe(":"+port, mux))
