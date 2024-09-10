@@ -2,6 +2,7 @@ package chat
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/coder/websocket"
 )
 
+// WebsocketHandler retorna uma func http.HandlerFunc que lida com conexoes websocket.
 func WebsocketHandler(server *chatServer) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Upgrade da conexao HTTP para websocket.
@@ -18,12 +20,8 @@ func WebsocketHandler(server *chatServer) http.HandlerFunc {
 			return
 		}
 
-		// Novo subscriber que se conectou.
-		sub := &Subscriber{
-			ip:    r.RemoteAddr,
-			color: 0, // Defina a cor como desejar
-			send:  make(chan []byte, 256),
-		}
+		// Cria um subscriber para a conexao.
+		sub := CreateSubscriber(r.RemoteAddr)
 
 		// Envia o subscriber para ser registrado.
 		server.register <- sub
@@ -34,6 +32,7 @@ func WebsocketHandler(server *chatServer) http.HandlerFunc {
 	}
 }
 
+// writePump envia mensagens para o subscriber conectado com um timeout de 10 segundos.
 func (s *chatServer) writePump(sub *Subscriber, conn *websocket.Conn) {
 	defer func() {
 		conn.Close(websocket.StatusNormalClosure, "channel closed")
@@ -49,6 +48,7 @@ func (s *chatServer) writePump(sub *Subscriber, conn *websocket.Conn) {
 	}
 }
 
+// readPump le mensagens do subscriber conectado.
 func (s *chatServer) readPump(sub *Subscriber, conn *websocket.Conn) {
 	defer func() {
 		s.unregister <- sub
@@ -58,13 +58,16 @@ func (s *chatServer) readPump(sub *Subscriber, conn *websocket.Conn) {
 
 	for {
 		_, message, err := conn.Read(context.Background())
-		if websocket.CloseStatus(err) == websocket.StatusNormalClosure {
+		if websocket.CloseStatus(err) == websocket.StatusNormalClosure || websocket.CloseStatus(err) == websocket.StatusGoingAway {
 			break
 		}
 		if err != nil {
 			log.Println("Error reading from websocket:", err)
 			break
 		}
-		s.broadcast <- message
+
+		// Adicionar o identificador e a cor do usuário à mensagem.
+		formattedMessage := fmt.Sprintf("<div style='color:%s'>%s</div><div>%s</div>", sub.color, sub.ip, string(message))
+		s.broadcast <- []byte(formattedMessage)
 	}
 }
