@@ -24,41 +24,14 @@
 </head>
 
 <body>
-    <h3>Bem vindo!</h3>
+    <h3 id="user-count">0 usuários conectados.</h3>
     <div id="messages"></div>
     <div id="input">
         <input type="text" id="messageInput" placeholder="Digite sua mensagem...">
         <button onclick="sendMessage()">Enviar</button>
     </div>
 
-    <script>
-        const ws = new WebSocket("ws://localhost:8080/chat");
-
-        ws.onopen = function (event) {
-            console.log("Conectado ao servidor WebSocket");
-        };
-
-        ws.onmessage = function (event) {
-            const messagesDiv = document.getElementById("messages");
-            const message = document.createElement("div");
-            message.textContent = event.data;
-            messagesDiv.appendChild(message);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        };
-
-        ws.onclose = function (event) {
-            console.log("Desconectado do servidor WebSocket");
-        };
-
-        function sendMessage() {
-            const input = document.getElementById("messageInput");
-            const message = input.value;
-            if (message) {
-                ws.send(message);
-                input.value = "";
-            }
-        }
-    </script>
+    <script src="/web/static/chat.js"></script>
 </body>
 
 </html>
