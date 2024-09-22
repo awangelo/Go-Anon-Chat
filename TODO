@@ -1,5 +1,4 @@
 Persistencia das mensagens.
-Style do chat.
 Contagem de tempo e tempo limite do chat.
 Chan de error em chatServer (?)
 Docker.
