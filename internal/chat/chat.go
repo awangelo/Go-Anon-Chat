@@ -67,7 +67,7 @@ func (s *chatServer) readPump(sub *Subscriber, conn *websocket.Conn) {
 		}
 
 		// Adicionar o identificador e a cor do usuário à mensagem.
-		formattedMessage := fmt.Sprintf("<div style='color:%s'>%s</div><div style='margin-bottom: 20px'>%s</div>", sub.color, sub.ip, string(message))
+		formattedMessage := fmt.Sprintf("<div style='color:%s'>%s</div><div style='margin-bottom: 20px'>%s</div><hr><br>", sub.color, sub.ip, string(message))
 		s.broadcast <- []byte(formattedMessage)
 	}
 }
