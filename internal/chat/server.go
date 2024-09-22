@@ -50,11 +50,11 @@ func (s *chatServer) Run() {
 		case sub := <-s.register:
 			s.subscribe(sub)
 			s.updateUserCount()
-			log.Printf("Subscriber %v connected.", sub)
+			log.Printf("Subscriber %v connected.", sub.ip)
 		case sub := <-s.unregister:
 			s.unsubscribe(sub)
 			s.updateUserCount()
-			log.Printf("Subscriber %v disconnected.", sub)
+			log.Printf("Subscriber %v disconnected.", sub.ip)
 		case message := <-s.broadcast:
 			s.broadcastMessage(message)
 		}
