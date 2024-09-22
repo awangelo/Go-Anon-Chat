@@ -30,7 +30,7 @@ func getUserIdentity(remoteAddr string) (string, string) {
 	ip, _, _ := net.SplitHostPort(remoteAddr)
 
 	octetos := strings.Split(ip, ".")
-	identifier := fmt.Sprintf(".%s..%s", octetos[1], octetos[3])
+	identifier := fmt.Sprintf("%s.x.%s.x", octetos[0], octetos[2])
 
 	color := getColorFromIP(ip)
 

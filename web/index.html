@@ -8,11 +8,26 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            width: 90%;
+            height: 90%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            box-sizing: border-box;
         }
 
         #messages {
             border: 1px solid #ccc;
-            height: 300px;
+            flex-grow: 1;
             overflow-y: scroll;
             padding: 10px;
         }
@@ -24,11 +39,13 @@
 </head>
 
 <body>
-    <h3 id="user-count">0 usuários conectados.</h3>
-    <div id="messages"></div>
-    <div id="input">
-        <input type="text" id="messageInput" placeholder="Digite sua mensagem...">
-        <button onclick="sendMessage()">Enviar</button>
+    <div id="container">
+        <h3 id="user-count">0 usuários conectados.</h3>
+        <div id="messages"></div>
+        <div id="input">
+            <input type="text" id="messageInput" placeholder="Digite sua mensagem...">
+            <button onclick="sendMessage()">Enviar</button>
+        </div>
     </div>
 
     <script src="/web/static/chat.js"></script>
