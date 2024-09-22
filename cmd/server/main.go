@@ -14,9 +14,6 @@ func init() {
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
-
-	// Inicializa o chat server
-	chat.NewChatServer()
 }
 
 func main() {
