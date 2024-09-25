@@ -1,3 +1,4 @@
+Dropar mensagens com '<' e '>'.
 Mysql com sqlc.
 Persistencia das mensagens.
 Contagem de tempo e tempo limite do chat.
