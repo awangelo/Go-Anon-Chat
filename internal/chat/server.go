@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"sync"
-	"time"
 )
 
 // chatServer gerencia subscribers e mensagens.
@@ -27,9 +26,6 @@ type chatServer struct {
 
 	// unregister solicita remover um subscriber.
 	unregister chan *Subscriber
-
-	// startTime eh o horario de inicio do chat.
-	startTime time.Time
 }
 
 // NewChatServer cria um novo chat server.
@@ -39,7 +35,6 @@ func NewChatServer() *chatServer {
 		broadcast:   make(chan []byte),
 		register:    make(chan *Subscriber),
 		unregister:  make(chan *Subscriber),
-		startTime:   time.Now(),
 	}
 }
 
