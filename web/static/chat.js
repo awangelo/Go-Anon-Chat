@@ -1,5 +1,5 @@
 const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-const wsPort = window.location.port || "8080"; // Use a porta atual ou 8080 como padrão
+const wsPort = window.location.port || "80";
 const ws = new WebSocket(`${protocol}://${window.location.hostname}:${wsPort}/chat`);
 
 ws.onopen = function (event) {
