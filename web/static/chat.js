@@ -1,4 +1,6 @@
-const ws = new WebSocket("ws://localhost:8080/chat");
+const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+const wsPort = window.location.port || "8080"; // Use a porta atual ou 8080 como padrão
+const ws = new WebSocket(`${protocol}://${window.location.hostname}:${wsPort}/chat`);
 
 ws.onopen = function (event) {
     console.log("Conectado ao servidor WebSocket");
@@ -9,7 +11,7 @@ ws.onmessage = function (event) {
     const message = document.createElement("div");
     message.innerHTML = event.data;
 
-    // Verificar se a mensagem eh a contagem de usuários
+    // Verificar se a mensagem é a contagem de usuários
     const userCountDiv = message.querySelector("#user-count");
     if (userCountDiv) {
         document.getElementById("user-count").innerHTML = userCountDiv.innerHTML;
