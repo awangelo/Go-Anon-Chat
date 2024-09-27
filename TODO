@@ -3,4 +3,3 @@ Mysql com sqlc.
 Persistencia das mensagens.
 Contagem de tempo e tempo limite do chat.
 Chan de error em chatServer (?)
-Docker.
