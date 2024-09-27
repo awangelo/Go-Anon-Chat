@@ -89,6 +89,7 @@ func (s *chatServer) broadcastMessage(msg []byte) {
 	}
 }
 
+// sendAllMessages envia todas as mensagens salvas na DB para um subscriber.
 func (s *chatServer) sendAllMessages(sub *Subscriber) {
 	ctx := context.Background()
 
