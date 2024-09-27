@@ -1,9 +1,12 @@
 package chat
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"sync"
+
+	"github.com/awangelo/Go-Anon-Chat/db/sqlc"
 )
 
 // chatServer gerencia subscribers e mensagens.
@@ -26,15 +29,19 @@ type chatServer struct {
 
 	// unregister solicita remover um subscriber.
 	unregister chan *Subscriber
+
+	// conexao com a DB
+	queries *sqlc.Queries
 }
 
 // NewChatServer cria um novo chat server.
-func NewChatServer() *chatServer {
+func NewChatServer(queries *sqlc.Queries) *chatServer {
 	return &chatServer{
 		subscribers: make(map[*Subscriber]struct{}),
 		broadcast:   make(chan []byte),
 		register:    make(chan *Subscriber),
 		unregister:  make(chan *Subscriber),
+		queries:     queries,
 	}
 }
 
@@ -46,12 +53,15 @@ func (s *chatServer) Run() {
 			s.subscribe(sub)
 			s.updateUserCount()
 			log.Printf("Subscriber %v connected.", sub.ip)
+
+			s.sendAllMessages(sub)
 		case sub := <-s.unregister:
 			s.unsubscribe(sub)
 			s.updateUserCount()
 			log.Printf("Subscriber %v disconnected.", sub.ip)
 		case message := <-s.broadcast:
 			s.broadcastMessage(message)
+			// SALVAR NA DB
 		}
 	}
 }
@@ -76,6 +86,22 @@ func (s *chatServer) broadcastMessage(msg []byte) {
 	defer s.subscribersMu.Unlock()
 	for sub := range s.subscribers {
 		sub.send <- msg
+	}
+}
+
+func (s *chatServer) sendAllMessages(sub *Subscriber) {
+	ctx := context.Background()
+
+	row, err := s.queries.GetMessages(ctx)
+	if err != nil {
+		log.Printf("Error getting messages: %v", err)
+		return
+	}
+
+	for _, parts := range row {
+		color := getColorFromIP(parts.UserIp)
+		formattedMessage := fmt.Sprintf("<div style='color:%s'>%s</div><div style='margin-bottom: 20px'>%s</div><hr><br>", color, parts.UserIp, parts.Content)
+		sub.send <- []byte(formattedMessage)
 	}
 }
 
