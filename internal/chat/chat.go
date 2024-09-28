@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/coder/websocket"
@@ -66,8 +67,19 @@ func (s *chatServer) readPump(sub *Subscriber, conn *websocket.Conn) {
 			break
 		}
 
+		// Sanatizar a mensagem antes de formatar.
+		sanitizedMsg := sanatizeMessage(message)
+		if sanitizedMsg == "" {
+			continue
+		}
 		// Adicionar o identificador e a cor do usuário à mensagem.
-		formattedMessage := fmt.Sprintf("<div style='color:%s'>%s</div><div style='margin-bottom: 20px'>%s</div><hr><br>", sub.color, sub.ip, string(message))
+		formattedMessage := fmt.Sprintf("<div style='color:%s'>%s</div><div style='margin-bottom: 20px'>%s</div><hr><br>", sub.color, sub.ip, sanitizedMsg)
 		s.broadcast <- []byte(formattedMessage)
 	}
+}
+
+func sanatizeMessage(msg []byte) string {
+	sanitized := strings.ReplaceAll(string(msg), "<", "")
+	sanitized = strings.ReplaceAll(sanitized, ">", "")
+	return sanitized
 }

@@ -53,7 +53,6 @@ func (s *chatServer) Run() {
 			s.subscribe(sub)
 			s.updateUserCount()
 			log.Printf("Subscriber %v connected.", sub.ip)
-
 			s.sendAllMessages(sub)
 		case sub := <-s.unregister:
 			s.unsubscribe(sub)
