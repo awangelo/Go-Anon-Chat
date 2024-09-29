@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/awangelo/Go-Anon-Chat/db/sqlc"
 	"github.com/coder/websocket"
 )
 
@@ -72,6 +73,14 @@ func (s *chatServer) readPump(sub *Subscriber, conn *websocket.Conn) {
 		if sanitizedMsg == "" {
 			continue
 		}
+
+		// Inserir a mensagem na DB antes de enviar para os subscribers.
+		err = s.saveMessage(sanitizedMsg, sub.ip)
+		if err != nil {
+			log.Printf("Error saving message: %v", err)
+			continue
+		}
+
 		// Adicionar o identificador e a cor do usuário à mensagem.
 		formattedMessage := fmt.Sprintf("<div style='color:%s'>%s</div><div style='margin-bottom: 20px'>%s</div><hr><br>", sub.color, sub.ip, sanitizedMsg)
 		s.broadcast <- []byte(formattedMessage)
@@ -82,4 +91,13 @@ func sanatizeMessage(msg []byte) string {
 	sanitized := strings.ReplaceAll(string(msg), "<", "")
 	sanitized = strings.ReplaceAll(sanitized, ">", "")
 	return sanitized
+}
+
+func (s *chatServer) saveMessage(con string, ip string) error {
+	ctx := context.Background()
+	err := s.queries.SaveMessage(ctx, sqlc.SaveMessageParams{
+		Content: con,
+		UserIp:  ip,
+	})
+	return err
 }

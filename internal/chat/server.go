@@ -60,7 +60,6 @@ func (s *chatServer) Run() {
 			log.Printf("Subscriber %v disconnected.", sub.ip)
 		case message := <-s.broadcast:
 			s.broadcastMessage(message)
-			// SALVAR NA DB
 		}
 	}
 }
