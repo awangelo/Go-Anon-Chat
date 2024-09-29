@@ -41,3 +41,18 @@ func (q *Queries) GetMessages(ctx context.Context) ([]GetMessagesRow, error) {
 	}
 	return items, nil
 }
+
+const saveMessage = `-- name: SaveMessage :exec
+INSERT INTO messages (content, user_ip)
+VALUES (?, ?)
+`
+
+type SaveMessageParams struct {
+	Content string
+	UserIp  string
+}
+
+func (q *Queries) SaveMessage(ctx context.Context, arg SaveMessageParams) error {
+	_, err := q.db.ExecContext(ctx, saveMessage, arg.Content, arg.UserIp)
+	return err
+}
