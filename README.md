@@ -8,7 +8,7 @@ Go-Anon-Chat é uma aplicação de chat web segura que permite aos usuários se 
 
 ![Demo](demo.png)
 
-[Vídeo de demonstração](demo.mp4)
+[Baixar vídeo de demonstração](demo.mp4)
 
 ### Características Principais
 
